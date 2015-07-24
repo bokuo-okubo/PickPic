@@ -1,6 +1,7 @@
 #pick_pic
+[https://github.com/bokuo-okubo/PickPic](https://github.com/bokuo-okubo/PickPic)
 
-A wrapper of curl script written in ruby.
+A wrapper of curl script written in ruby multi thread.
 
 ## Requirement
 

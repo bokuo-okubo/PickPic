@@ -1,5 +1,6 @@
 require 'yaml'
 require 'fileutils'
+require 'thwait'
 
 BASE_PATH = './data_source/'
 
@@ -19,7 +20,13 @@ EOS
 
       FileUtils.mkdir_p save_path unless FileTest.exist? save_path
 
-      url_list.each { |url| Fetch.curl(url, save_path) }
+      threads = []
+      url_list.each do |url|
+        threads << Thread.new { Fetch.curl(url, save_path) }
+      end
+      puts 'work in multi-thread'
+      ThreadsWait.all_waits(*threads) { |th| printf "." }
+      puts "\ndone!"
     end
 
     def get_file_path(message)
@@ -47,7 +54,7 @@ EOS
       ary = uri.to_s.split("/")
       save_file_name = ary[-2].to_s + "-" + ary[-1].to_s
       begin
-        `curl #{ uri } -o #{ save_path + save_file_name }`
+        `curl #{ uri } -o #{ save_path + save_file_name } >/dev/null 2>&1`
       rescue => e
         puts e
         File.open("../error.log", "a") { |f| f.write e }
